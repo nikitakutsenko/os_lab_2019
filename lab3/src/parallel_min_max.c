@@ -91,20 +91,31 @@ int main(int argc, char **argv) {
   struct timeval start_time;
   gettimeofday(&start_time, NULL);
 
+  int fd[2];
+  FILE* f;
+
+  if (with_files) {
+    f = fopen("buffer", "wb");
+  } else {
+    pipe(fd);
+  }
+
   for (int i = 0; i < pnum; i++) {
     pid_t child_pid = fork();
     if (child_pid >= 0) {
       // successful fork
       active_child_processes += 1;
       if (child_pid == 0) {
-        // child process
-
-        // parallel somehow
+        struct MinMax mM = GetMinMax(
+          array,
+          array_size * (active_child_processes - 1) / pnum,
+          pnum == active_child_processes? array_size: array_size * active_child_processes / pnum
+        );
 
         if (with_files) {
-          // use files here
+          fwrite(&mM, sizeof(struct MinMax), 1, f);
         } else {
-          // use pipe here
+          write(fd[1], &mM, sizeof(struct MinMax));
         }
         return 0;
       }
@@ -116,9 +127,16 @@ int main(int argc, char **argv) {
   }
 
   while (active_child_processes > 0) {
-    // your code here
+    int rt;
+    wait(&rt);
 
+    printf("status: %d\n", rt);
     active_child_processes -= 1;
+  }
+
+  if (with_files) {
+    fclose(f);
+    f = fopen("buffer", "rb");
   }
 
   struct MinMax min_max;
@@ -126,17 +144,16 @@ int main(int argc, char **argv) {
   min_max.max = INT_MIN;
 
   for (int i = 0; i < pnum; i++) {
-    int min = INT_MAX;
-    int max = INT_MIN;
+    struct MinMax* data = malloc(sizeof(struct MinMax));
 
     if (with_files) {
-      // read from files
+      fread(data, sizeof(struct MinMax), 1, f);
     } else {
-      // read from pipes
+      read(fd[0], data, sizeof(struct MinMax));
     }
 
-    if (min < min_max.min) min_max.min = min;
-    if (max > min_max.max) min_max.max = max;
+    if ((*data).min < min_max.min) min_max.min = (*data).min;
+    if ((*data).max > min_max.max) min_max.max = (*data).max;
   }
 
   struct timeval finish_time;
@@ -146,6 +163,10 @@ int main(int argc, char **argv) {
   elapsed_time += (finish_time.tv_usec - start_time.tv_usec) / 1000.0;
 
   free(array);
+
+  if (with_files) {
+    fclose(f);
+  }
 
   printf("Min: %d\n", min_max.min);
   printf("Max: %d\n", min_max.max);
