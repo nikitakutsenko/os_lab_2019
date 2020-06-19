@@ -11,7 +11,7 @@
 int main(int argc, char **argv) {
     uint64_t k = -1;
     uint64_t mod = -1;
-    char servers[255] = {'\0'}; // TODO: explain why 255
+    char servers[255] = {'\0'};
 
     while (true) {
         int current_optind = optind ? optind : 1;
@@ -77,6 +77,7 @@ int main(int argc, char **argv) {
         printf("invalid servers\n");
         return 1;
     }
+
     unsigned int servers_num = 0;
     struct Server *to = malloc(sizeof(struct Server) * 10);
     while(!feof(f))
@@ -86,7 +87,8 @@ int main(int argc, char **argv) {
         servers_num++;
     }
     servers_num--;
-    int block = k/servers_num + 1;
+    int array_step = k/servers_num;
+    int last_step = k%servers_num + array_step;
     int total = 1;
 
     int i;
@@ -113,8 +115,8 @@ int main(int argc, char **argv) {
             exit(1);
         }
 
-        uint64_t begin = 1 + i*block;
-        uint64_t end = (begin + block) > k + 1 ? k + 1 : begin + block;
+        uint64_t begin = 1 + i * array_step;
+        uint64_t end = begin + (i == servers_num? last_step: array_step);
 
         char task[sizeof(uint64_t) * 3];
         memcpy(task, &begin, sizeof(uint64_t));
@@ -126,16 +128,13 @@ int main(int argc, char **argv) {
             exit(1);
         }
 
-        char response[sizeof(uint64_t)];
-        if (recv(sck, response, sizeof(response), 0) < 0) {
+        uint64_t answer = 0;
+        if (recv(sck, &answer, sizeof(uint64_t), 0) < 0) {
             fprintf(stderr, "Recieve failed\n");
             exit(1);
         }
 
-        uint64_t answer = 0;
-        memcpy(&answer, response, sizeof(uint64_t));
         total *= answer;
-
         close(sck);
     }
     free(to);

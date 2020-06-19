@@ -32,4 +32,4 @@ parallel_min_max.o : utils.h find_min_max.h
 	$(CC) -c parallel_min_max.c $(CFLAGS)
 
 clear :
-	rm *.o timeout zombi procm 2> /dev/null
+	rm *.o timeout zombi procm parallel_sum 2> /dev/null

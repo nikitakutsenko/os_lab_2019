@@ -10,17 +10,18 @@ struct SumArgs {
   int *array;
   int begin;
   int end;
+  int* sum;
 };
 
 int Sum(const struct SumArgs *args)
 {
-  int sum = 0;
+  static int sum = 0;
   for(int i = (*args).begin; i < (*args).end; i++)
 	sum += (*args).array[i];
   return sum;
 }
 
-void *ThreadSum(void *args)
+void ThreadSum(void *args)
 {
   struct SumArgs *sum_args = (struct SumArgs *)args;
   return (void *)(size_t)Sum(sum_args);
@@ -63,7 +64,7 @@ int main(int argc, char **argv) {
                 return 1;
             }
             break;
-	  case 2:
+	        case 2:
             seed = atoi(optarg);
             if (seed < 1)
             {
@@ -101,21 +102,19 @@ int main(int argc, char **argv) {
 
   int *array = malloc(sizeof(int) * array_size);
   GenerateArray(array, array_size, seed);
-  uint32_t array_step = array_size / threads_num;
-  uint32_t last_step = array_size % threads_num;
-  if(last_step == 0) last_step = array_step;
-  else array_step++;
-  int local_step[threads_num];
+
   struct SumArgs args[threads_num];
 
   struct timeval time_start, time_end;
   gettimeofday(&time_start, NULL);
+
+  int step = array_size / threads_num;
+
   for (uint32_t i = 0; i < threads_num; i++)
   {
-    local_step[i]  = i < threads_num - 1 ? array_step : last_step;
     args[i].array = array;
-    args[i].begin = i * array_step;
-    args[i].end =  i * array_step + local_step;
+    args[i].begin = i * step;
+    args[i].end = (i+1) * step + (i == threads_num-1)? array_size % threads_num: 0;
     if (pthread_create(&threads[i], NULL, ThreadSum, (void *)&args[i]))
     {
       printf("Error: pthread_create failed!\n");

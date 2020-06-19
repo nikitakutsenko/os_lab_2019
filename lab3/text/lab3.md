@@ -5,7 +5,7 @@
 ### Необходимые знания
 
 1. Аргументы командной строки
-2. Сборка с помощью gcc (clang) 
+2. Сборка с помощью gcc (clang)
 
 Написать функцию GetMinMax в find\_max\_min.c, которая ищет минимальный и максимальный элементы массива, на заданном промежутке.
 Разобраться, что делает программа в sequiential\_min\_max.c, скомпилировать, проверить, что написанный вами GetMinMax работает правильно.
@@ -30,7 +30,7 @@
 ### Ресурсы
 
 1. [Мануал для fork](http://man7.org/linux/man-pages/man2/fork.2.html)
-2. [Мануал для pipe](http://man7.org/linux/man-pages/man2/pipe.2.html)
+2. [Мануал для pipe](http://man7d.org/linux/man-pages/man2/pipe.2.html)
 3. [Небольшой туториал для работы с файлами](https://www.cprogramming.com/tutorial/cfileio.html)
 4. [fprintf, sprintf](http://en.cppreference.com/w/c/io/fprintf), [scanf, fscanf](http://en.cppreference.com/w/c/io/fscanf) - функции, которые кажутся полезными.
 
@@ -38,7 +38,7 @@
 
 ### Необходимые знания
 
-1. Как работают Makefile'ы
+1. Как работают Makefile'
 
 Изучить все targets в makefile, будьте готовы объяснить, за что они отвечают. Используя `makefile`, собрать получившиеся решения. Добавьте target `all`, отвечающий за сборку всех программ.
 

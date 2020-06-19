@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
     server.sin_addr.s_addr = htonl(INADDR_ANY);
 
     int opt_val = 1;
-    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val));
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(int));
 
     int err = bind(server_fd, (struct sockaddr *)&server, sizeof(server));
     if (err < 0) {
@@ -82,15 +82,12 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    err = listen(server_fd, 128);
+    err = listen(server_fd, 2);
     if (err < 0) {
         fprintf(stderr, "Could not listen on socket\n");
         return 1;
     }
 
-    FILE* f = fopen("servers.txt", "a");
-    fprintf(f, "%d\n", port);
-    fclose(f);
     printf("Server listening at %d\n", port);
 
     while (true) {

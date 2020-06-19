@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "wait.h": "c",
+        "limits": "c",
+        "getopt.h": "c",
+        "utils.h": "c",
+        "find_min_max.h": "c",
+        "unistd.h": "c"
+    }
+}

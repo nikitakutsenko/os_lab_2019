@@ -17,9 +17,11 @@ uint64_t Factorial(const struct FactorialArgs *args) {
     uint64_t ans = 1;
 
     int i;
-    for(i = args->begin; i < args->end; i++)
-        ans *= i;
-
+    for(i = args->begin; i < args->end; i++) {
+        if (i % args->mod != 0) {
+            ans *= i % args->mod;
+        }
+    }
     return ans;
 }
 

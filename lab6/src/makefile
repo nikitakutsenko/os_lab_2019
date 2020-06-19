@@ -1,6 +1,8 @@
 CC=gcc
 CFLAGS=-I.
 
+all : lib server client
+
 lib: include/header.c
 	$(CC) -o include/header.o -c include/header.c $(CFLAGS)
 	ar rcs include/libhead.a include/header.o
