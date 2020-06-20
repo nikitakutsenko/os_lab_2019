@@ -25,10 +25,10 @@ int main(int argc, char **argv) {
   int SERV_PORT = atoi(argv[2]);
   int BUFSIZE = atoi(argv[3]);
 
-  char* sendline = alloca(BUFSIZE), recvline = alloca(BUFSIZE + 1);
+  char* sendline = alloca(BUFSIZE);
+  char* recvline = alloca(BUFSIZE + 1);
   struct sockaddr_in servaddr;
   struct sockaddr_in cliaddr;
-
 
   memset(&servaddr, 0, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
     perror("inet_pton problem");
     exit(1);
   }
+
   if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
     perror("socket problem");
     exit(1);
